@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { io } from "socket.io-client";
+import Race from "./components/Race";
+import { subscribe } from "./store/horseSlice";
 import './App.css';
 
+const socket = io("localhost:3002");
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React.
-        </a>
-      </header>
-    </div>
-  );
+    const dispatch = useDispatch();
+    const horses = useSelector((state) => state.horses.horses);
+
+    const [btnStarted, setbtnStarted] = useState(false);
+
+    const startRace = () => {
+        socket.connect();
+        socket.emit("start");
+        socket.on("ticker", (data) => {
+            dispatch(subscribe(data));
+            setbtnStarted(true);
+        });
+    };
+
+    const isFinished = horses.map((el) => el.distance).every((el) => el === 1000);
+
+    useEffect(() => {
+        if (isFinished) {
+            socket.disconnect();
+        }
+    }, [isFinished]);
+
+    return (
+        <div className="wrapper">
+            <div>
+                <button disabled={btnStarted} onClick={startRace}>
+                    Start
+                </button>
+            </div>
+            <Race value={horses.distance} />
+        </div>
+    );
 }
 
 export default App;
