@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import horses from "./horseReducer";
+import horses from "./horseSlice";
 
 export const store = configureStore({
   reducer: {
