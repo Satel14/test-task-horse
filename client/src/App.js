@@ -33,7 +33,7 @@ function App() {
     return (
         <div className="wrapper">
             <div>
-                <button disabled={btnStarted} onClick={startRace}>
+                <button disabled={btnStarted} onClick={startRace} data-testid="greeting-btn">
                     Start
                 </button>
             </div>
